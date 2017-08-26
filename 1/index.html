@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>星际评分</title>
+  <style>
+    body,
+    ul,
+    li {
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      list-style-type: none;
+    }
+
+    .rating {
+      width: 160px;
+      height: 26px;
+    }
+
+    .rate-item {
+      float: left;
+      background: url('../img/rating.png') no-repeat;
+      width: 32px;
+      height: 32px;
+    }
+  </style>
+</head>
+
+<body>
+  <ul class="rating" id="rating">
+    <li class="rate-item" title="很不好"></li>
+    <li class="rate-item" title="不好"></li>
+    <li class="rate-item" title="一般"></li>
+    <li class="rate-item" title="很好"></li>
+    <li class="rate-item" title="很好"></li>
+  </ul>
+  <script>
+    var Rate = (function () {
+      function css(el) {
+        const dom = typeof el === 'string' ? document.querySelector(el) : el;
+        return function () {
+          if (arguments.length > 1) {
+            dom.style[arguments[0]] = arguments[1]
+            return false;
+          } else {
+            return dom.currentStyle ? dom.currentStyle[arguments[0]] : window.getComputedStyle(dom, null)[
+              arguments[
+                0]];
+          }
+        }
+      }
+      class Rate {
+        constructor(params) {
+          this.default = {
+            index: 0,
+            el: document.querySelector('#rating'),
+            items: document.querySelectorAll('.rate-item'),
+          }
+          this.opts = Object.assign({}, this.default, params);
+        }
+        init() {
+          this.lightOn(this.opts.index);
+          this.bindEvent();
+        }
+        lightOn(pos) {
+          [].forEach.call(this.opts.items, (item, index) => {
+            if (index < pos) {
+              css(item)('backgroundPosition', '0 -32px');
+            } else {
+              css(item)('backgroundPosition', '0 0');
+            }
+          });
+        }
+        bindEvent() {
+          this.opts.el.addEventListener('mouseover', (e) => {
+            const currentDom = e.target;
+            const index = [].indexOf.call(this.opts.items, currentDom);
+            this.lightOn(index + 1);
+          })
+          this.opts.el.addEventListener('mouseout', (e) => {
+            this.lightOn(this.opts.index);
+          })
+          this.opts.el.addEventListener('click', (e) => {
+            const currentDom = e.target;
+            const index = [].indexOf.call(this.opts.items, currentDom);
+            this.opts.index = index + 1;
+          })
+        }
+      }
+      return Rate;
+    })();
+
+    new Rate({
+      index: 2 //来自服务器
+    }).init();
+  </script>
+</body>
+
+</html>
